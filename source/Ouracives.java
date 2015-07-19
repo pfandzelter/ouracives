@@ -21,8 +21,8 @@ public class Ouracives
      * Main function that is called on start
      *
      */
-	public void start(String apiKeyNYTimes, String consumerKeyStr, String consumerSecretStr, String accessTokenStr, String accessTokenSecretStr)
-	{
+    public void start(String apiKeyNYTimes, String consumerKeyStr, String consumerSecretStr, String accessTokenStr, String accessTokenSecretStr)
+    {
         //initialize the logger
         GregorianCalendar cal = new GregorianCalendar();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -42,23 +42,28 @@ public class Ouracives
         
         //look if there is a new article
         //if there is none, skip to the wait process; otherwise execute algorithm
-        if(!ouracivesNYTimesInterface.getCurrentArticle().equals(newestArticle))
+        while(true)
         {
-            newestArticle = ouracivesNYTimesInterface.getCurrentArticle();
-            //find the word in the new article that has least recently been used
-            OuracivesNYTimesWord foundWord = ouracivesNYTimesInterface.getFoundWord(newestArticle);
-            //tweet out the found word
-            ouracivesTwitterInterface.tweetWord(foundWord);
-        }
-        //wait 10 minutes before calling the API again
-        try
-        {
-            Thread.sleep(6000);
-        }   catch(Exception e)
+       	    if(!ouracivesNYTimesInterface.getCurrentArticle().equals(newestArticle))
             {
-                ouracivesLogger.log(e.toString());
+        	newestArticle = ouracivesNYTimesInterface.getCurrentArticle();
+      	    	//find the word in the new article that has least recently been used
+                OuracivesNYTimesWord foundWord = ouracivesNYTimesInterface.getFoundWord(newestArticle);
+                //tweet out the found word
+                ouracivesTwitterInterface.tweetWord(foundWord);
             }
-	}
+            //wait 10 minutes before calling the API again
+            try
+            {
+                Thread.sleep(600000);
+            }   catch(Exception e)
+                {
+                    ouracivesLogger.log(e.toString());
+                }
+	    }
+        }
+    }
+        
     
     /**
      *
