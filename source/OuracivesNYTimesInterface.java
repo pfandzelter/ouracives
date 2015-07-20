@@ -94,7 +94,7 @@ public class OuracivesNYTimesInterface
         String timestamp = dateFormat.format(cal.getTime());
         timestamp = timestamp.replaceAll(" ", "");
         
-        //for each word in this set, we will create a OuracivesNYTimesWord and put it in a new Set
+        //for each word in this set, we will create a OuracivesNYTimesWord and put it in a new list
         LinkedList<OuracivesNYTimesWord> nyTimesWords = new LinkedList<OuracivesNYTimesWord>();
         
         for(String word : wordSet)
