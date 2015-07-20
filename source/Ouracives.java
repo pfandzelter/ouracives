@@ -21,8 +21,8 @@ public class Ouracives
      * Main function that is called on start
      *
      */
-	public void start(String apiKeyNYTimes, String consumerKeyStr, String consumerSecretStr, String accessTokenStr, String accessTokenSecretStr)
-	{
+    public void start(String apiKeyNYTimes, String consumerKeyStr, String consumerSecretStr, String accessTokenStr, String accessTokenSecretStr)
+    {
         //initialize the logger
         GregorianCalendar cal = new GregorianCalendar();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -61,8 +61,7 @@ public class Ouracives
                     ouracivesLogger.log(e.toString());
                 }
         }
-	}
-
+    }
     
     /**
      *
