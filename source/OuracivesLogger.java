@@ -29,7 +29,7 @@ public class OuracivesLogger
     {
         //create a timestamp to be inserted in front of every logged line
         GregorianCalendar cal = new GregorianCalendar();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:MM:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         dateFormat.setTimeZone(cal.getTimeZone());
         String timestamp = dateFormat.format(cal.getTime());
 
