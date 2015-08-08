@@ -2,7 +2,7 @@
 *
 * @author: Tobias Pfandzelter
 * @version: 0.1
-* 
+*
 */
 
 import java.io.FileInputStream;
@@ -21,25 +21,25 @@ public class Ouracives
      * Main function that is called on start
      *
      */
-    public void start(String apiKeyNYTimes, String consumerKeyStr, String consumerSecretStr, String accessTokenStr, String accessTokenSecretStr)
+    public void start(String apiKeyNYTimes, String consumerKeyStr, String consumerSecretStr, String accessTokenStr, String accessTokenSecretStr, String blacklistPath)
     {
         //initialize the logger
         GregorianCalendar cal = new GregorianCalendar();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         dateFormat.setTimeZone(cal.getTimeZone());
         String timestamp = dateFormat.format(cal.getTime());
-        
+
         OuracivesLogger ouracivesLogger = new OuracivesLogger(timestamp + "log");
-        
+
         //initialize Twitter interface with our set of API keys
         OuracivesTwitterInterface ouracivesTwitterInterface = new OuracivesTwitterInterface(consumerKeyStr, consumerSecretStr, accessTokenStr, accessTokenSecretStr, ouracivesLogger);
-        
+
         //initialize NYTimes interface with out API key
-        OuracivesNYTimesInterface ouracivesNYTimesInterface = new OuracivesNYTimesInterface(apiKeyNYTimes, ouracivesLogger);
-        
+        OuracivesNYTimesInterface ouracivesNYTimesInterface = new OuracivesNYTimesInterface(apiKeyNYTimes, blacklistPath, ouracivesLogger);
+
         //at first, get the newest article the NYTimes has to offer
         String newestArticle = ouracivesNYTimesInterface.getCurrentArticle();
-        
+
         //look if there is a new article
         //if there is none, skip to the wait process; otherwise execute algorithm
         while(true)
@@ -62,7 +62,7 @@ public class Ouracives
                 }
         }
     }
-    
+
     /**
      *
      * Main method that is called with "java Ouracives". Creates an instance of Ouracives and starts the application.
@@ -76,26 +76,28 @@ public class Ouracives
         //http://www.mkyong.com/java/java-properties-file-examples/
         Properties prop = new Properties();
         InputStream input = null;
-        
+
         String apiKeyNYTimes = "";
         String consumerKeyStr = "";
         String consumerSecretStr = "";
         String accessTokenStr = "";
         String accessTokenSecretStr = "";
-        
+        String blacklistPath = "";
+
         try {
-            
+
             input = new FileInputStream("config.properties");
-            
+
             // load a properties file
             prop.load(input);
-            
+
             apiKeyNYTimes = prop.getProperty("apiKeyNYTimes");
             consumerKeyStr = prop.getProperty("consumerKeyStr");
             consumerSecretStr = prop.getProperty("consumerSecretStr");
             accessTokenStr = prop.getProperty("accessTokenStr");
             accessTokenSecretStr = prop.getProperty("accessTokenSecretStr");
-            
+            blacklistPath = prop.getProperty("blacklistPath");
+
         } catch (IOException ex) {
             ex.printStackTrace();
             System.exit(0);
@@ -108,11 +110,11 @@ public class Ouracives
                 }
             }
         }
-        
+
         //create an instance of Ouracives
         Ouracives ou = new Ouracives();
         //start the algorithm with the set of API keys
-        ou.start(apiKeyNYTimes, consumerKeyStr, consumerSecretStr, accessTokenStr, accessTokenSecretStr);
+        ou.start(apiKeyNYTimes, consumerKeyStr, consumerSecretStr, accessTokenStr, accessTokenSecretStr, blacklistPath);
     }
 
 }
