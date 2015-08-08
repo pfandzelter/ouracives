@@ -147,7 +147,12 @@ public class OuracivesNYTimesInterface
      */
     public String getCurrentArticle()
     {
-        String out = callUrl("http://api.nytimes.com/svc/search/v2/articlesearch.json?callback=svc_search_v2_articlesearch&sort=newest&fl=web_url&api-key=");
+        //Problem is that returning the newest article will return one that is published in the future instead of one that has already been published
+        //to solve this problem, we will only search for articles that have been published prior to the current date (which we get by using GregorianCalendar and SimpleDateFormat as it has to be in the format yyyyMMdd)
+        GregorianCalendar cal = new GregorianCalendar();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        dateFormat.setTimeZone(cal.getTimeZone());
+        String out = callUrl("http://api.nytimes.com/svc/search/v2/articlesearch.json?callback=svc_search_v2_articlesearch&end_date=" + dateFormat.format(cal.getTime()) + "&sort=newest&fl=web_url&api-key=");
         String url = parseFor(out, "web_url");
         return url;
     }
@@ -155,7 +160,7 @@ public class OuracivesNYTimesInterface
 
     /**
      *
-     * Finds the timestamp of a given article
+     * Finds the timestamp of a given article and returns it as an instance of GregorianCalendar
      *
      * @param   article the URL of a NYTimes article
      * @return          the timestamp of the article as GregorianCalendar

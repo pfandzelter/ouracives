@@ -169,7 +169,5 @@ public class OuracivesTwitterInterface
         this.accessTokenStr = accessTokenStr;
         this.accessTokenSecretStr = accessTokenSecretStr;
         this.ouracivesLogger = ouracivesLogger;
-
-        //this.tweetText("Hello World, I am online!");
     }
 }
