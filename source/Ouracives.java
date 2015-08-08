@@ -58,7 +58,7 @@ public class Ouracives
                 Thread.sleep(600000);
             }   catch(Exception e)
                 {
-                    ouracivesLogger.log(e.toString());
+                    ouracivesLogger.log("Class: Ouracives Method: start Error: " + e.toString());
                 }
         }
     }

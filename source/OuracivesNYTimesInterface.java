@@ -56,7 +56,7 @@ public class OuracivesNYTimesInterface
      */
     private String parseFor(String input, String field)
     {
-        ouracivesLogger.log("Looking for " + field);
+        ouracivesLogger.log("Class: OuracivesNYTimesInterface Method: parseFor Looking for " + field);
 
         try
         {
@@ -71,7 +71,7 @@ public class OuracivesNYTimesInterface
 
         }   catch(Exception e)
             {
-                ouracivesLogger.log(e.toString());
+                ouracivesLogger.log("Class: OuracivesNYTimesInterface Method: parseFor Error: " + e.toString());
                 return "";
             }
 
@@ -209,7 +209,7 @@ public class OuracivesNYTimesInterface
 
             String inputLine;
 
-            ouracivesLogger.log(((Integer) con.getResponseCode()).toString());
+            ouracivesLogger.log("Class: OuracivesNYTimesInterface Method: callUrl Response: " + ((Integer) con.getResponseCode()).toString());
 
             StringBuffer response = new StringBuffer();
 
@@ -224,7 +224,7 @@ public class OuracivesNYTimesInterface
 
         } catch (Exception e)
         {
-            ouracivesLogger.log(e.toString());
+            ouracivesLogger.log("Class: OuracivesNYTimesInterface Method: callUrl Error: " + e.toString());
             return "";
         }
     }
@@ -237,23 +237,24 @@ public class OuracivesNYTimesInterface
     public OuracivesNYTimesInterface(String apiKey, String blacklistPath, OuracivesLogger ouracivesLogger)
     {
         this.apiKey = apiKey;
+        this.ouracivesLogger = ouracivesLogger;
 
         //load blacklisted search terms
         try {
+                    //open file
                     BufferedReader in = new BufferedReader(new FileReader(blacklistPath));
-                    String str;
-                    str = in.readLine();
-                    while ((str = in.readLine()) != null) {
-                        System.out.println(str);
-                    }
+                    //as blacklist.txt has only one line of text, reading the first line only is not a problems
+                    String str = in.readLine();
+                    //close file
                     in.close();
 
+                    //create a HashSet using the words (seperated by comma) from blacklist.txt
                     this.blacklistedWords = new HashSet<String>(Arrays.asList(str.split(",")));
 
-                } catch (IOException e) {
-                    ouracivesLogger.log(e.toString());
+                } catch (Exception e) {
+                    ouracivesLogger.log("Class: OuracivesNYTimesInterface Method: OuracivesNYTimesInterface Error: " +  e.toString());
                 }
 
-        this.ouracivesLogger = ouracivesLogger;
+
     }
 }

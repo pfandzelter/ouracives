@@ -2,7 +2,7 @@
 *
 * @author: Tobias Pfandzelter
 * @version: 0.1
-* 
+*
 */
 
 import java.util.GregorianCalendar;
@@ -17,7 +17,7 @@ public class OuracivesLogger
 {
     //filename to write the log into
     private String filename;
-    
+
     /**
      *
      * Logs a given line to the log file. That's it.
@@ -32,7 +32,7 @@ public class OuracivesLogger
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:MM:ss");
         dateFormat.setTimeZone(cal.getTimeZone());
         String timestamp = dateFormat.format(cal.getTime());
-        
+
         //append the line to the log file
         try
         {
@@ -50,7 +50,7 @@ public class OuracivesLogger
                 System.out.println(e);
             }
     }
-    
+
     /**
      *
      * Class constructor.
@@ -58,7 +58,7 @@ public class OuracivesLogger
      */
 	public OuracivesLogger(String filename)
     {
-        
+
         this.filename = filename + ".txt";
         try
         {
@@ -69,7 +69,6 @@ public class OuracivesLogger
             {
                 System.out.println(e);
             }
-        
+
     }
 }
-

@@ -2,7 +2,7 @@
 *
 * @author: Tobias Pfandzelter
 * @version: 0.1
-* 
+*
 */
 
 import java.util.GregorianCalendar;
@@ -19,7 +19,7 @@ public class OuracivesNYTimesWord
     private String lastArticle;
     //url of the article it is now mentioned in (currently unused)
     private String currentArticle;
-    
+
     /**
      *
      *  Gives the variable word.
@@ -31,7 +31,7 @@ public class OuracivesNYTimesWord
     {
         return word;
     }
-    
+
     /**
      *
      *  Gives the variable lastMention.
@@ -43,7 +43,7 @@ public class OuracivesNYTimesWord
     {
         return lastMention;
     }
-    
+
     /**
      *
      *  Gives the variable curretnMention.
@@ -55,7 +55,7 @@ public class OuracivesNYTimesWord
     {
         return currentMention;
     }
-    
+
     /**
      *
      *  Gives the variable lastArticle.
@@ -67,7 +67,7 @@ public class OuracivesNYTimesWord
     {
         return lastArticle;
     }
-    
+
     /**
      *
      *  Gives the variable currentArticle.
@@ -79,7 +79,7 @@ public class OuracivesNYTimesWord
     {
         return currentArticle;
     }
-    
+
     /**
      *
      *  Class constructor.
@@ -94,4 +94,3 @@ public class OuracivesNYTimesWord
         this.currentArticle = currentArticle;
     }
 }
-
