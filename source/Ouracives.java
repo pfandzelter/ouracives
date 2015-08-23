@@ -1,7 +1,7 @@
 /**
 *
 * @author: Tobias Pfandzelter
-* @version: 0.1
+* @version: 0.2
 *
 */
 
@@ -38,7 +38,7 @@ public class Ouracives
         OuracivesNYTimesInterface ouracivesNYTimesInterface = new OuracivesNYTimesInterface(apiKeyNYTimes, blacklistPath, ouracivesLogger);
 
         //at first, get the newest article the NYTimes has to offer
-        String newestArticle = ouracivesNYTimesInterface.getCurrentArticle();
+        OuracivesNYTimesArticle newestArticle = ouracivesNYTimesInterface.getCurrentArticle();
 
         //look if there is a new article
         //if there is none, skip to the wait process; otherwise execute algorithm

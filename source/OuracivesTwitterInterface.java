@@ -41,6 +41,8 @@ public class OuracivesTwitterInterface
      */
     private void callUrl(String url)
     {
+        ouracivesLogger.log("Class: OuracivesTwitterInterface Method: callUrl Calling: " + url);
+
         try
         {
             OAuthConsumer oAuthConsumer = new CommonsHttpOAuthConsumer(consumerKeyStr,
@@ -85,7 +87,7 @@ public class OuracivesTwitterInterface
         tweet += "Last seen: ";
 
         //convert the field lastMention to an usable timestamp format
-        GregorianCalendar cal = word.getLastMention();
+        GregorianCalendar cal = word.getLastArticle().getPubDate();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         dateFormat.setTimeZone(cal.getTimeZone());
         String timestamp = dateFormat.format(cal.getTime());
@@ -97,7 +99,7 @@ public class OuracivesTwitterInterface
         tweet += "in: ";
 
         //add the url of the field lastArticle (hopefully it is shortened in the actual tweet)
-        tweet += word.getLastArticle();
+        tweet += word.getLastArticle().getWebUrl();
 
         return tweet;
 
@@ -150,6 +152,7 @@ public class OuracivesTwitterInterface
      */
     private void tweetText(String tweet)
     {
+        ouracivesLogger.log("Class: OuracivesTwitterInterface Method: tweetText Tweeting: " + tweet);
         //convert it to UTF-8 so it can be appended to the url
         tweet = convertTweetToUrlFormat(tweet);
 

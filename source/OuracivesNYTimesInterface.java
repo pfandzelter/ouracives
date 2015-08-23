@@ -1,7 +1,7 @@
 /**
 *
 * @author: Tobias Pfandzelter
-* @version: 0.1
+* @version: 0.2
 *
 */
 
@@ -45,36 +45,70 @@ public class OuracivesNYTimesInterface
         return wordSet;
     }
 
+
     /**
      *
-     * Parses a given String in JSON format for the first appearance of a given field and returns this fields value
+     * Finds the timestamp of a given article and returns it as an instance of GregorianCalendar
      *
-     * @param   input   input in JSON format
-     * @param   field   field to be searched for
-     * @return          value of the first appearance of field "field"
+     * @param   article the URL of a NYTimes article
+     * @return          the timestamp of the article as GregorianCalendar
      *
      */
-    private String parseFor(String input, String field)
+    private GregorianCalendar getTimestamp(String pubTime)
     {
-        ouracivesLogger.log("Class: OuracivesNYTimesInterface Method: parseFor Looking for " + field);
+        //this timestamp is in the format "YYYY-MM-DDTHH:MM:SSZ" (the actual clock time is often 0 for some reason, which also means that we may be unable to correctly find headlines that have been published earlier the same day), let's convert it to GregorianCalendar by using substrings
+        GregorianCalendar timestamp = new GregorianCalendar(Integer.parseInt(pubTime.substring(0,3)),
+                                                            Integer.parseInt(pubTime.substring(5,6)),
+                                                            Integer.parseInt(pubTime.substring(8,9)),
+                                                            Integer.parseInt(pubTime.substring(11,12)),
+                                                            Integer.parseInt(pubTime.substring(14,15)),
+                                                            Integer.parseInt(pubTime.substring(17,18)));
+
+        return timestamp;
+    }
+
+    /**
+     * parses a given JSON String in the return format of api.nytimes.com to a OuracivesNYTimesArticle
+     * @param  json  JSON String to parse
+     * @param  index index of the object to use (one JSON String may contain several objects)
+     * @return       OuracivesNYTimesArticle with the attributes of the wanted article
+     */
+    private OuracivesNYTimesArticle parseJSONToArticle(String json, int index)
+    {
+        ouracivesLogger.log("Class: OuracivesNYTimesInterface Method: parseJSONToArticle Parsing article");
 
         try
         {
-            JSONObject json = new JSONObject(input);
+            String headline;
+            String webUrl;
+            GregorianCalendar pubDate;
 
-            JSONObject response = (JSONObject) json.get("response");
+            //first, convert the horrible JSON string to a JSONObject of the article we want to use
+            JSONObject jsonObj = new JSONObject(json);
+            JSONObject response = (JSONObject) jsonObj.get("response");
             JSONArray docs = (JSONArray) response.get("docs");
-            if(docs.length() == 0) return "";
-            JSONObject firstArticle = (JSONObject) docs.get(0);
-            ouracivesLogger.log("Found: " + firstArticle.get(field).toString());
-            return firstArticle.get(field).toString();
+            if(docs.length() == 0) return null;
+            JSONObject article = (JSONObject) docs.get(index);
+
+            //read headline from article
+            headline = ((JSONObject) article.get("headline")).get("main").toString();
+            ouracivesLogger.log("Found headline: " + headline);
+
+            //read web URL from article
+            webUrl = ((JSONObject) article.get("web_url")).toString();
+            ouracivesLogger.log("Found web_url: " + webUrl);
+
+            //read publication date from article;
+            pubDate = getTimestamp(((JSONObject) article.get("pub_date")).toString());
+
+            //return found attributes as a new OuracivesNYTimesArticle
+            return new OuracivesNYTimesArticle(headline, webUrl, pubDate);
 
         }   catch(Exception e)
             {
-                ouracivesLogger.log("Class: OuracivesNYTimesInterface Method: parseFor Error: " + e.toString());
-                return "";
+                ouracivesLogger.log("Class: OuracivesNYTimesInterface Method: parseJSONToArticle Error: " + e.toString());
+                return null;
             }
-
     }
 
     /**
@@ -85,16 +119,10 @@ public class OuracivesNYTimesInterface
      * @return          this word
      *
      */
-    public OuracivesNYTimesWord getFoundWord(String article)
+    public OuracivesNYTimesWord getFoundWord(OuracivesNYTimesArticle currentArticle)
     {
-        //get the article and parse it to a readable thing
-        String out = callUrl("http://api.nytimes.com/svc/search/v2/articlesearch.json?callback=svc_search_v2_articlesearch&fq=web_url%3A" + "\"" + article + "\"" + "&sort=newest&fl=headline&api-key=");
-
-        //parse the output for the headline
-        String headline = parseFor(out, "headline");
-
         //create a set of words used in this article, all lower case
-        String[] words = headline.split(" ");
+        String[] words = currentArticle.getHeadline().split(" ");
 
         HashSet<String> wordSet = new HashSet<String>();
 
@@ -109,7 +137,7 @@ public class OuracivesNYTimesInterface
         wordSet = removeBlacklistedTerms(wordSet);
 
         //get the current timestamp so we don't use the current article and convert it to url format
-        GregorianCalendar cal = getTimestamp(article);
+        GregorianCalendar cal = currentArticle.getPubDate();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy MM dd");
         dateFormat.setTimeZone(cal.getTimeZone());
         String timestamp = dateFormat.format(cal.getTime());
@@ -120,10 +148,9 @@ public class OuracivesNYTimesInterface
 
         for(String word : wordSet)
         {
-            String informationAboutWord = callUrl("http://api.nytimes.com/svc/search/v2/articlesearch.json?callback=svc_search_v2_articlesearch&q=" + word + "&end_date=" + timestamp + "&sort=newest&fl=web_url&api-key=");
-
-            String lastArticle = parseFor(informationAboutWord, "web_url");
-            nyTimesWords.add(new OuracivesNYTimesWord(word, getTimestamp(lastArticle), cal, lastArticle, article));
+            //getting the newest URL will just return the same article we're currently using again, therefore we want the second URL
+            OuracivesNYTimesArticle lastArticle = parseJSONToArticle(callUrl("http://api.nytimes.com/svc/search/v2/articlesearch.json?callback=svc_search_v2_articlesearch&q=" + word + "&end_date=" + timestamp + "&sort=newest&api-key="), 1);
+            nyTimesWords.add(new OuracivesNYTimesWord(word, lastArticle, currentArticle));
         }
 
         //of all our OuracivesNYTimesWords we will find the least recently used one
@@ -131,7 +158,7 @@ public class OuracivesNYTimesInterface
 
         for(OuracivesNYTimesWord nytw : nyTimesWords)
         {
-            if(nytw.getLastMention().before(leastRecentlyUsedWord.getLastMention())) leastRecentlyUsedWord = nytw;
+            if(nytw.getLastArticle().getPubDate().before(leastRecentlyUsedWord.getLastArticle().getPubDate())) leastRecentlyUsedWord = nytw;
         }
 
         return leastRecentlyUsedWord;
@@ -142,61 +169,27 @@ public class OuracivesNYTimesInterface
      *
      * Finds the newest available article in the NYTimes.
      *
-     * @return  unique URL of the newest article
+     * @return  newest Article as OuracivesNYTimesArticle
      *
      */
-    public String getCurrentArticle()
+    public OuracivesNYTimesArticle getCurrentArticle()
     {
         //Problem is that returning the newest article will return one that is published in the future instead of one that has already been published
         //to solve this problem, we will only search for articles that have been published prior to the current date (which we get by using GregorianCalendar and SimpleDateFormat as it has to be in the format yyyyMMdd)
         GregorianCalendar cal = new GregorianCalendar();
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         dateFormat.setTimeZone(cal.getTimeZone());
-        String out = callUrl("http://api.nytimes.com/svc/search/v2/articlesearch.json?callback=svc_search_v2_articlesearch&end_date=" + dateFormat.format(cal.getTime()) + "&sort=newest&fl=web_url&api-key=");
-        String url = parseFor(out, "web_url");
-        return url;
+        String out = callUrl("http://api.nytimes.com/svc/search/v2/articlesearch.json?callback=svc_search_v2_articlesearch&end_date=" + dateFormat.format(cal.getTime()) + "&sort=newest&api-key=");
+        //we want to get the first article, not second, etc.
+        return parseJSONToArticle(out, 0);
     }
-
-
-    /**
-     *
-     * Finds the timestamp of a given article and returns it as an instance of GregorianCalendar
-     *
-     * @param   article the URL of a NYTimes article
-     * @return          the timestamp of the article as GregorianCalendar
-     *
-     */
-    private GregorianCalendar getTimestamp(String article)
-    {
-        //if there is no article, return the earliest possible timestamp
-        if(article.equals(""))
-        {
-            return new GregorianCalendar(0, 0, 0, 0, 0);
-        }
-
-        //get the article and parse it to a readable thing
-        String out = callUrl("http://api.nytimes.com/svc/search/v2/articlesearch.json?callback=svc_search_v2_articlesearch&fq=web_url%3A" + "\"" + article + "\"" + "&sort=newest&fl=pub_date&api-key=");
-
-        String timestamp = parseFor(out, "pub_date");
-
-        //this timestamp is in the format "YYYY-MM-DDTHH:MM:SSZ" (the actual clock time is often 0 for some reason, which also means that we may be unable to correctly find headlines that have been published earlier the same day), let's convert it to GregorianCalendar by using substrings
-        GregorianCalendar time = new GregorianCalendar(Integer.parseInt(timestamp.substring(0,3)),
-                                                       Integer.parseInt(timestamp.substring(5,6)),
-                                                       Integer.parseInt(timestamp.substring(8,9)),
-                                                       Integer.parseInt(timestamp.substring(11,12)),
-                                                       Integer.parseInt(timestamp.substring(14,15)),
-                                                       Integer.parseInt(timestamp.substring(17,18)));
-
-        return time;
-    }
-
 
     /**
      *
      * Sends a GET request to a given URL and returns the outstream. Designed for api.nytimes.com
      *
      * @param   url the url to be called
-     * @return      true if there is a new article, false if not
+     * @return      returned JSON string as String object
      *
      */
     private String callUrl(String url)
@@ -222,8 +215,6 @@ public class OuracivesNYTimesInterface
             {
                 response.append(inputLine);
             }
-
-            //System.wait(10);
 
             return response.toString();
 

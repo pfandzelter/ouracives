@@ -1,7 +1,7 @@
 /**
 *
 * @author: Tobias Pfandzelter
-* @version: 0.1
+* @version: 0.2
 *
 */
 
@@ -11,21 +11,14 @@ public class OuracivesNYTimesWord
 {
     //the actual word
     private String word;
-    //timestamp of the last time it has been mentioned
-    private GregorianCalendar lastMention;
-    //timestamp of the current time it is mentioned (currently unused)
-    private GregorianCalendar currentMention;
-    //url of the article it has last been mentioned in
-    private String lastArticle;
-    //url of the article it is now mentioned in (currently unused)
-    private String currentArticle;
+    //article it has last been mentioned in
+    private OuracivesNYTimesArticle lastArticle;
+    //article it is now mentioned in
+    private OuracivesNYTimesArticle currentArticle;
 
     /**
-     *
-     *  Gives the variable word.
-     *
-     *  @return word
-     *
+     * returns the actual word as a String
+     * @return word
      */
     public String getWord()
     {
@@ -33,49 +26,19 @@ public class OuracivesNYTimesWord
     }
 
     /**
-     *
-     *  Gives the variable lastMention.
-     *
-     *  @return lastMention
-     *
+     * returns article the word has last been mentioned in as OuracivesNYTimesArticle
+     * @return last article the word has been mentioned in
      */
-    public GregorianCalendar getLastMention()
-    {
-        return lastMention;
-    }
-
-    /**
-     *
-     *  Gives the variable curretnMention.
-     *
-     *  @return currentMention
-     *
-     */
-    public GregorianCalendar getCurrentMention()
-    {
-        return currentMention;
-    }
-
-    /**
-     *
-     *  Gives the variable lastArticle.
-     *
-     *  @return lastArticle
-     *
-     */
-    public String getLastArticle()
+    public OuracivesNYTimesArticle getLastArticle()
     {
         return lastArticle;
     }
 
     /**
-     *
-     *  Gives the variable currentArticle.
-     *
-     *  @return word
-     *
+     * returns article the word is currently mentioned in as OuracivesNYTimesArticle
+     * @return current article
      */
-    public String getCurrentArticle()
+    public OuracivesNYTimesArticle getCurrentArticle()
     {
         return currentArticle;
     }
@@ -85,11 +48,9 @@ public class OuracivesNYTimesWord
      *  Class constructor.
      *
      */
-    public OuracivesNYTimesWord(String word, GregorianCalendar lastMention, GregorianCalendar currentMention, String lastArticle, String currentArticle)
+    public OuracivesNYTimesWord(String word, OuracivesNYTimesArticle lastArticle, OuracivesNYTimesArticle currentArticle)
     {
         this.word = word;
-        this.lastMention = lastMention;
-        this.currentMention = currentMention;
         this.lastArticle = lastArticle;
         this.currentArticle = currentArticle;
     }
