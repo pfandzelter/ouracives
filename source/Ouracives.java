@@ -44,7 +44,7 @@ public class Ouracives
         //if there is none, skip to the wait process; otherwise execute algorithm
         while(true)
         {
-            if(!ouracivesNYTimesInterface.getCurrentArticle().equals(newestArticle))
+            if(!ouracivesNYTimesInterface.getCurrentArticle().getWebUrl().equals(newestArticle.getWebUrl()))
             {
                 newestArticle = ouracivesNYTimesInterface.getCurrentArticle();
                 //find the word in the new article that has least recently been used

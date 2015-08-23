@@ -95,11 +95,11 @@ public class OuracivesNYTimesInterface
             ouracivesLogger.log("Found headline: " + headline);
 
             //read web URL from article
-            webUrl = ((JSONObject) article.get("web_url")).toString();
+            webUrl = article.get("web_url").toString();
             ouracivesLogger.log("Found web_url: " + webUrl);
 
             //read publication date from article;
-            pubDate = getTimestamp(((JSONObject) article.get("pub_date")).toString());
+            pubDate = getTimestamp(article.get("pub_date").toString());
 
             //return found attributes as a new OuracivesNYTimesArticle
             return new OuracivesNYTimesArticle(headline, webUrl, pubDate);
