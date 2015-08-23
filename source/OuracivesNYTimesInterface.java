@@ -158,6 +158,8 @@ public class OuracivesNYTimesInterface
 
         for(OuracivesNYTimesWord nytw : nyTimesWords)
         {
+            //if the last article is null, the word has never ever been used, making it the word that has not been used for the longest time
+            if(nytw.getLastArticle() == null) return nytw;
             if(nytw.getLastArticle().getPubDate().before(leastRecentlyUsedWord.getLastArticle().getPubDate())) leastRecentlyUsedWord = nytw;
         }
 

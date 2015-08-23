@@ -87,22 +87,28 @@ public class OuracivesTwitterInterface
         tweet += "Last seen: ";
 
         //convert the field lastMention to an usable timestamp format
-        GregorianCalendar cal = word.getLastArticle().getPubDate();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        dateFormat.setTimeZone(cal.getTimeZone());
-        String timestamp = dateFormat.format(cal.getTime());
+        if(word.getLastArticle() == null)
+        {
+            tweet += "never";
 
-        //add timestamp
-        tweet += timestamp;
+        } else
+            {
+                GregorianCalendar cal = word.getLastArticle().getPubDate();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                dateFormat.setTimeZone(cal.getTimeZone());
+                String timestamp = dateFormat.format(cal.getTime());
 
-        tweet += " ";
-        tweet += "in: ";
+                //add timestamp
+                tweet += timestamp;
 
-        //add the url of the field lastArticle (hopefully it is shortened in the actual tweet)
-        tweet += word.getLastArticle().getWebUrl();
+                tweet += " ";
+                tweet += "in: ";
+
+                //add the url of the field lastArticle (hopefully it is shortened in the actual tweet)
+                tweet += word.getLastArticle().getWebUrl();
+            }
 
         return tweet;
-
     }
 
     /**
