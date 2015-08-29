@@ -1,7 +1,7 @@
 /**
 *
-* @author: Tobias Pfandzelter
-* @version: 0.2
+* @author: Tobias Pfandzelter (@pfandzelter)
+* @version: 0.3
 *
 */
 
@@ -56,15 +56,24 @@ public class OuracivesNYTimesInterface
      */
     private GregorianCalendar getTimestamp(String pubTime)
     {
-        //this timestamp is in the format "YYYY-MM-DDTHH:MM:SSZ" (the actual clock time is often 0 for some reason, which also means that we may be unable to correctly find headlines that have been published earlier the same day), let's convert it to GregorianCalendar by using substrings
-        GregorianCalendar timestamp = new GregorianCalendar(Integer.parseInt(pubTime.substring(0,3)),
-                                                            Integer.parseInt(pubTime.substring(5,6)),
-                                                            Integer.parseInt(pubTime.substring(8,9)),
-                                                            Integer.parseInt(pubTime.substring(11,12)),
-                                                            Integer.parseInt(pubTime.substring(14,15)),
-                                                            Integer.parseInt(pubTime.substring(17,18)));
+        try
+        {
+            //this timestamp is in the format "YYYY-MM-DD'T'HH:MM:SS'Z'" (the actual clock time is often 0 for some reason, which also means that we may be unable to correctly find headlines that have been published earlier the same day), let's convert it to GregorianCalendar by using substrings
+            pubTime = pubTime.replaceAll("[^\\d]"," ");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy MM dd HH mm ss");
 
-        return timestamp;
+            GregorianCalendar timestamp = new GregorianCalendar();
+            timestamp.setTime(sdf.parse(pubTime));
+
+            ouracivesLogger.log("Class: OuracivesNYTimesInterface Method: getTimestamp Parsed: " + pubTime + " to " + timestamp.toString()
+            );
+            return timestamp;
+        } catch (Exception e)
+            {
+                ouracivesLogger.log(e.toString());
+                return null;
+            }
+
     }
 
     /**

@@ -1,7 +1,7 @@
 /**
  *
- * @author Tobias Pfandzelter
- * @version 0.2
+ * @author Tobias Pfandzelter (@pfandzelter)
+ * @version 0.3
  *
  */
 

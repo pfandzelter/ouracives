@@ -1,7 +1,7 @@
 /**
 *
-* @author: Tobias Pfandzelter
-* @version: 0.2
+* @author: Tobias Pfandzelter (@pfandzelter)
+* @version: 0.3
 *
 */
 
@@ -36,12 +36,12 @@ public class OuracivesLogger
         //append the line to the log file
         try
         {
+            String message = timestamp + "\n" + line + "\n" + "\n";
+
+            System.out.println(message);
+
             Writer out = new BufferedWriter(new FileWriter(filename, true));
-            out.append(timestamp);
-            out.append("\n");
-            out.append(line);
-            out.append("\n");
-            out.append("\n");
+            out.append(message);
             out.close();
         }   catch (Exception e)
             {
